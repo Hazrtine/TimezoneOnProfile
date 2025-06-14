@@ -184,7 +184,7 @@ const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
     };
 
     const renderTime = () => {
-        if (!selectedTz) return "🕒 Select Timezone ▼";
+        if (!selectedTz) return "Select Timezone ▼";
         return <code
             style={{
                 fontFamily: "var(--font-primary)",
