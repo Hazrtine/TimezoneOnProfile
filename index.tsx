@@ -20,7 +20,6 @@ import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
-import { wreq } from "@webpack";
 import { React } from "@webpack/common";
 
 const logger = new Logger("TimezoneOnProfile");
@@ -145,8 +144,6 @@ const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
     const [query, setQuery] = React.useState("");
     const [selectedTz, setSelectedTz] = React.useState(getUserTimezone(userId));
     const [currentTime, setCurrentTime] = React.useState("");
-    const fontsize = settings.store.timeFontSize + "px";
-
 
     const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -184,16 +181,22 @@ const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
     };
 
     const renderTime = () => {
-        if (!selectedTz) return "Select Timezone ▼";
-        return <code
+        if (!selectedTz) return <span
             style={{
-                fontFamily: "var(--font-primary)",
-                fontSize: fontsize,
+                fontSize: settings.store.timeFontSize,
                 color: "var(--header-primary)"
             }}
         >
+            TZ ▼
+        </span>;
+        return <span
+            style={{
+                fontSize: settings.store.timeFontSize,
+                color: "var(--header-primary)",
+            }}
+        >
             {currentTime}
-        </code>;
+        </span>;
     };
 
     return (
@@ -218,7 +221,7 @@ const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
                         padding: "8px",
                         borderRadius: "8px",
                         boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-                        width: "220px"
+                        width: "220px",
                     }}
                 >
                     <input
@@ -236,7 +239,7 @@ const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
                             color: "var(--header-primary)"
                         }}
                     />
-                    <div style={{ maxHeight: "150px", overflowY: "auto" }}>
+                    <div style={{ maxHeight: "250px", overflowY: "auto" }}>
                         {filtered.length > 0 ? filtered.map(tz => (
                             <div
                                 key={tz}
@@ -303,8 +306,5 @@ export default definePlugin({
                 replace: `!t.isProvisional&&(0,r.jsx)($self.TimezoneTriggerInline,{userId:t.id}),(0,r.jsx)("div",{className:"dotSpacer__63ed3"}),I((0,r.jsx)(s.Z,{`
             }
         }
-    ],
-    start() {
-        logger.log(wreq.m[530]);
-    }
+    ]
 });
