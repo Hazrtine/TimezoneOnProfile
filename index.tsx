@@ -55,6 +55,7 @@ const timezones = [
     "Europe/Warsaw",
     "Europe/Istanbul",
     "Europe/Moscow",
+    "Europe/Kyiv",
 
     // mena
     "Asia/Dubai",
