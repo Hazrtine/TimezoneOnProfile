@@ -18,11 +18,9 @@
 
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
-import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
 import { React } from "@webpack/common";
 
-const logger = new Logger("TimezoneOnProfile");
 const timezones = [
     "UTC",
 
@@ -119,7 +117,6 @@ function setUserTimezone(userId: string, tz: string) {
         ...settings.store.timezonesByUser,
         [userId]: tz
     };
-    logger.log(`Set timezone for ${userId} to ${tz}`);
 }
 
 function update(tz: string): string {
