@@ -17,99 +17,15 @@
 */
 
 import { definePluginSettings } from "@api/Settings";
+import { enableStyle } from "@api/Styles";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { React } from "@webpack/common";
 
+import timeZoneStyle from "./style.css?managed";
+
 const timezones = [
-    "UTC",
-
-    // n america
-    "America/New_York",
-    "America/Chicago",
-    "America/Denver",
-    "America/Los_Angeles",
-    "America/Toronto",
-    "America/Vancouver",
-    "America/Mexico_City",
-    // "America/Houston", genuinely insane how this isn't in there?
-
-    // s america
-    "America/Sao_Paulo",
-    "America/Buenos_Aires",
-    "America/Lima",
-    "America/Bogota",
-    "America/Caracas",
-    "America/Santiago",
-    "America/Asuncion",
-
-    // europe
-    "Europe/London",
-    "Europe/Paris",
-    "Europe/Berlin",
-    "Europe/Rome",
-    "Europe/Madrid",
-    "Europe/Amsterdam",
-    "Europe/Stockholm",
-    "Europe/Athens",
-    "Europe/Warsaw",
-    "Europe/Istanbul",
-    "Europe/Moscow",
-    "Europe/Kyiv",
-
-    // mena
-    "Asia/Dubai",
-    "Asia/Riyadh",
-    "Asia/Tehran",
-    "Asia/Jerusalem",
-    "Asia/Baghdad",
-    "Asia/Kuwait",
-    "Asia/Qatar",
-    "Asia/Nicosia",
-    "Africa/Tripoli",
-    "Africa/Tunis",
-    "Africa/Khartoum",
-    "Africa/Cairo",
-    "Africa/Casablanca",
-
-    // africa
-    "Africa/Nairobi",
-    "Africa/Johannesburg",
-    "Africa/Lagos",
-
-    // asia
-    "Asia/Kolkata",
-    "Asia/Dhaka",
-    "Asia/Karachi",
-    "Asia/Kathmandu",
-    "Asia/Bangkok",
-    "Asia/Jakarta",
-    "Asia/Singapore",
-    "Asia/Kuala_Lumpur",
-    "Asia/Shanghai",
-    "Asia/Taipei",
-    "Asia/Seoul",
-    "Asia/Tokyo",
-    "Asia/Manila",
-    "Asia/Hong_Kong",
-
-    // oceania
-    "Australia/Sydney",
-    "Australia/Melbourne",
-    "Australia/Brisbane",
-    "Pacific/Auckland",
-    "Pacific/Fiji",
-
-    // misc and other fringe timezone cities
-    "Pacific/Honolulu",
-    "America/Anchorage",
-    "Asia/Almaty",
-    "Asia/Tashkent",
-    "Asia/Yangon",
-    "Asia/Vladivostok",
-    "Asia/Macau",
-    "Indian/Maldives",
-    "Pacific/Port_Moresby",
+    "UTC", ...Intl.supportedValuesOf("timeZone")
 ];
 
 function setUserTimezone(userId: string, tz: string) {
@@ -138,6 +54,7 @@ function getUserTimezone(userId: string): string {
 }
 
 const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
+    enableStyle(timeZoneStyle);
     const [open, setOpen] = React.useState(false);
     const [query, setQuery] = React.useState("");
     const [selectedTz, setSelectedTz] = React.useState(getUserTimezone(userId));
@@ -171,7 +88,11 @@ const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
         return () => clearInterval(interval);
     }, [selectedTz]);
 
-    const filtered = timezones.filter(tz => tz.toLowerCase().includes(query.toLowerCase()));
+    const normalizeString = (str: string) => str.replace(/_/g, " ").toLowerCase();
+    const filtered = timezones.filter(tz =>
+        normalizeString(tz).includes(normalizeString(query))
+    );
+
     const handleSelect = (tz: string) => {
         setUserTimezone(userId, tz);
         setSelectedTz(tz);
@@ -182,83 +103,50 @@ const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
         if (!selectedTz) return <span
             style={{
                 fontSize: settings.store.timeFontSize,
-                color: "var(--header-primary)"
             }}
+            className="vc-tzonprofile-badge"
         >
             TZ ▼
         </span>;
         return <span
             style={{
                 fontSize: settings.store.timeFontSize,
-                color: "var(--header-primary)",
             }}
+            className="vc-tzonprofile-time" //i don't really know if anyone is going to want these to be two different classes but better safe
         >
             {currentTime}
         </span>;
     };
 
     return (
-        <div ref={containerRef} style={{ position: "relative", display: "inline-block" }}>
+        <div ref={containerRef} className="vc-tzonprofile-container">
             <div
                 onClick={() => setOpen(!open)}
-                style={{
-                    color: "var(--header-primary)",
-                }}
+                className="vc-tzonprofile-selector"
             >
                 {renderTime()}
             </div>
 
             {open && (
-                <div
-                    style={{
-                        position: "absolute",
-                        top: "110%",
-                        left: 0,
-                        zIndex: 1000,
-                        backgroundColor: "var(--background-floating)",
-                        padding: "8px",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-                        width: "220px",
-                    }}
-                >
+                <div className="vc-tzonprofile-dropdown">
                     <input
                         type="text"
                         placeholder="Search timezones..."
                         value={query}
                         onChange={e => setQuery(e.currentTarget.value)}
-                        style={{
-                            width: "100%",
-                            padding: "6px 8px",
-                            marginBottom: "6px",
-                            borderRadius: "4px",
-                            border: "1px solid var(--background-modifier-accent)",
-                            backgroundColor: "var(--background-secondary)",
-                            color: "var(--header-primary)"
-                        }}
+                        className="vc-tzonprofile-search"
                     />
-                    <div style={{ maxHeight: "250px", overflowY: "auto" }}>
+                    <div className="vc-tzonprofile-list">
                         {filtered.length > 0 ? filtered.map(tz => (
                             <div
                                 key={tz}
                                 onClick={() => handleSelect(tz)}
-                                style={{
-                                    padding: "6px 8px",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                    color: "var(--header-primary)"
-                                }}
-                                onMouseOver={e => {
-                                    (e.currentTarget as HTMLElement).style.backgroundColor = "var(--background-modifier-hover)";
-                                }}
-                                onMouseOut={e => {
-                                    (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
-                                }}
+                                className="vc-tzonprofile-item"
                             >
                                 {tz}
                             </div>
                         )) : (
-                            <div style={{ color: "var(--text-muted)", padding: "6px 0" }}>
+                            <div className="vc-tzonprofile-empty">
                                 No matches
                             </div>
                         )}
@@ -267,6 +155,7 @@ const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
             )}
         </div>
     );
+
 };
 
 const settings = definePluginSettings({
@@ -290,10 +179,10 @@ const settings = definePluginSettings({
 
 // @ts-ignore
 export default definePlugin({
-    name: "timezoneOnProfile",
+    name: "TimezoneOnProfile",
     tags: ["12-Hour Format", "Time Font Size", "ShowModView", "DisableDiscoveryFilters"],
     description: "Add user-specific timezones to profiles.",
-    authors: [Devs.haz],
+    authors: [Devs.Hazrtine],
     settings,
     TimezoneTriggerInline,
     patches: [
