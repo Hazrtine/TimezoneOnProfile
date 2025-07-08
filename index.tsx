@@ -53,7 +53,7 @@ function getUserTimezone(userId: string): string {
     return (settings.store.timezonesByUser as unknown as Record<string, string>)[userId] ?? "";
 }
 
-const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
+const TimezoneTriggerInline = ({ userId }: { userId: string; }) => {
     enableStyle(timeZoneStyle);
     const [open, setOpen] = React.useState(false);
     const [query, setQuery] = React.useState("");
@@ -112,7 +112,7 @@ const TimezoneTriggerInline = ({ userId }: { userId: string }) => {
             style={{
                 fontSize: settings.store.timeFontSize,
             }}
-            className="vc-tzonprofile-time" //i don't really know if anyone is going to want these to be two different classes but better safe
+            className="vc-tzonprofile-time" // i don't really know if anyone is going to want these to be two different classes but better safe
         >
             {currentTime}
         </span>;
@@ -190,7 +190,7 @@ export default definePlugin({
             find: /!t\.isProvisional&&I\(\(0,r\.jsx\)\(s\.Z,\{/,
             replacement: {
                 match: /!t\.isProvisional&&I\(\(0,r\.jsx\)\(s\.Z,\{/,
-                replace: `!t.isProvisional&&(0,r.jsx)($self.TimezoneTriggerInline,{userId:t.id}),(0,r.jsx)("div",{className:"dotSpacer__63ed3"}),I((0,r.jsx)(s.Z,{`
+                replace: "!t.isProvisional&&(0,r.jsx)($self.TimezoneTriggerInline,{userId:t.id}),(0,r.jsx)(\"div\",{className:\"dotSpacer__63ed3\"}),I((0,r.jsx)(s.Z,{"
             }
         }
     ]
