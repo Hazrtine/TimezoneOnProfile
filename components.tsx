@@ -75,7 +75,7 @@ export const TimezoneTriggerProfile = (props: { userId: string;[key: string]: an
         <>
             <div className="vc-tzonprofile-container" onClick={e => { e.stopPropagation(); createTimezoneMenuItems(UserStore.getUser(userId), selectedTz).props.action(); }}>
                 <div className="vc-tzonprofile-selector">
-                    <span style={{ fontSize: settings.store.timeFontSize }} className={classes(className, "vc-tzonprofile-profiletime")}>
+                    <span style={{ fontSize: settings.store.profileTimeFontSize }} className={classes(className, "vc-tzonprofile-profiletime")}>
                         <Timestamp timestamp={currentTime} />
                     </span>
                 </div>
@@ -134,11 +134,13 @@ export const TimezoneTriggerUsername = (props: { userId: string; timestamp?: str
                 {tooltipProps => (
                     <span
                         {...tooltipProps}
-                        style={{ fontSize: settings.store.timeFontSize }}
                         className="vc-tzonprofile-time"
+                        style={{ "--vc-tzonprofile-username-font-size": `${settings.store.usernameTimeFontSize}px` } as React.CSSProperties}
                     >
-                        {" "}
-                        <Timestamp timestamp={currentTime} />
+                        <Timestamp
+                            className="vc-tzonprofile-username-timestamp"
+                            timestamp={currentTime}
+                        />
                     </span>
                 )}
             </Tooltip>
